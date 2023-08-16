@@ -7,10 +7,67 @@ Whenever a borrower gets into shortfall their assets can be liquidated to bring 
     * open console - network
     * connect your wallet and look for `complete-challenge` request
     * check response and copy your `jwt` - this is your API key
+    ![api-key](api-key.png)
 2. Get a list of shortfall borrowers
     * using any programming language make a get request to https://api.metalend.tech/liquidation/v2/get-borrowers while passing your JWT as "Authorization" header
     * the data returned is an object with addresses of all shortfall borrowers to their respective shortfall denominated in wei WETH. The amount of shortfall reflects approximately how much can be liquidated from the borrower
     * please keep in mind the endpoint is limited to 1 request per 1 minute. We update the list once per half an hour anyway, so further requests are not necessary
+    * example request in javascript:
+```javascript
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
+
+const axiosApi = axios.create({
+  baseURL: "https://api.metalend.tech/liquidation",
+  timeout: 15000,
+  headers: {
+    "Content-type": "application/json",
+  },
+});
+
+const setupAxios = () => {
+  axiosApi.interceptors.request.use(function (request) {
+    const token = "<YOUR_JWT_KEY_STRING>";
+    if (token) {
+      request.headers["Authorization"] = token;
+    } else {
+      throw "No API key";
+    }
+    return request;
+  });
+
+  axiosApi.interceptors.response.use(
+    function (response) {
+      return response;
+    },
+    function (error) {
+      if (error.response) {
+        throw error.response.data.message;
+      } else if (error.request) {
+        // The request was made but no response was received
+        throw error.request;
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        throw error.message;
+      }
+    }
+  );
+};
+
+class Api {
+  constructor() {
+    setupAxios();
+  }
+
+  async getBorrowers() {
+    return await axiosApi.get(`/v2/get-borrowers`);
+  }
+}
+
+export const api = new Api();
+```
+
 3. Now that you have a list of borrowers, you can call several view functions with chain requests
     * setup your provider with Ronin RPC - https://api.roninchain.com/rpc
     * `function getTotalBorrows(address account) external view returns (uint);`
