@@ -9,7 +9,7 @@ Whenever a borrower gets into shortfall their assets can be liquidated to bring 
     * check response and copy your `jwt` - this is your API key
 2. Get a list of shortfall borrowers
     * using any programming language make a get request to https://api.metalend.tech/liquidation/v2/get-borrowers while passing your JWT as "Authorization" header
-    * the data returned is an object with addresses of all shortfall borrowers to their respective shortfall denominated in wei. The amount of shortfall reflects approximately how much can be liquidated from the borrower.
+    * the data returned is an object with addresses of all shortfall borrowers to their respective shortfall denominated in wei WETH. The amount of shortfall reflects approximately how much can be liquidated from the borrower.
     * please keep in mind the endpoint is limited to 1 request per 1 minute. We update the list once per half an hour anyway, so further requests are not necessary
 3. Now that you have a list of borrowers, you can call several view functions with chain requests
     * setup your provider with Ronin RPC - https://api.roninchain.com/rpc
