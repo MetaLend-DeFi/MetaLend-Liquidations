@@ -9,7 +9,7 @@ Whenever a borrower gets into shortfall their assets can be liquidated to bring 
     * check response and copy your `jwt` - this is your API key
 2. Get a list of shortfall borrowers
     * using any programming language make a get request to https://api.metalend.tech/liquidation/v2/get-borrowers while passing your JWT as "Authorization" header
-    * the data returned is an object with addresses of all shortfall borrowers to their respective shortfall denominated in wei WETH. The amount of shortfall reflects approximately how much can be liquidated from the borrower.
+    * the data returned is an object with addresses of all shortfall borrowers to their respective shortfall denominated in wei WETH. The amount of shortfall reflects approximately how much can be liquidated from the borrower
     * please keep in mind the endpoint is limited to 1 request per 1 minute. We update the list once per half an hour anyway, so further requests are not necessary
 3. Now that you have a list of borrowers, you can call several view functions with chain requests
     * setup your provider with Ronin RPC - https://api.roninchain.com/rpc
@@ -25,10 +25,10 @@ Whenever a borrower gets into shortfall their assets can be liquidated to bring 
         * each borrower can have borrow active only in 1 market kind at a time
         * the borrower must be liquidated in their currently active market
     * `function getAccountTokens(address account) external view returns (uint);`
-        * target contracts - fungible tokens collateral markets
+        * target contracts - fungible tokens collateral contracts
         * RON Collateral: `0x6DB7Bd2Fa4B1B89C56C08b553d7c04Df0301E885` https://app.roninchain.com/address/0x6db7bd2fa4b1b89c56c08b553d7c04df0301e885
         * AXS Collateral: `0xC737cCA751142ac9b51cB8ef475042DfCea9287a` https://app.roninchain.com/address/0xc737cca751142ac9b51cb8ef475042dfcea9287a
-        * this returns the balance of the account for AXS/RON collateral with wei representation
+        * this returns the balance of the account for AXS/RON collateral in wei representation
         * this value is important because you cannot liquidate more tokens than the user has
 4. At this point you have a list of shortfall borrowers, their active borrow markets and their collateral balances, let's start with liquidations.
 5. You will need a private key of an account with enough balance of the underlying tokens of the markets you will be liquidating users in. Get enough RON, WETH and USDC. We recommend using a secondary account created for liquidations. For WETH and USDC you will also have to approve the market to be able to spend your tokens. Liquidations will be processed in the markets mentioned above:
@@ -68,6 +68,40 @@ return appraisal;
 ```
 
 ```kotlin
+class CustomDynamicStruct(
+    vararg values: Type<*>
+) : DynamicStruct(values.toList()), StructType {
+    private val itemTypes = mutableListOf<Class<Type<*>>>()
+
+    init {
+        for (value in values) {
+            itemTypes.add(value.javaClass)
+        }
+    }
+
+    override fun bytes32PaddedLength(): Int {
+        return super.bytes32PaddedLength() + 32
+    }
+
+    override fun getTypeAsString(): String {
+        val type = StringBuilder("(")
+        for (i in itemTypes.indices) {
+            val value = getValue()[i]
+            val typeAsString = if (value is Array<*>) {
+                AbiTypes.getTypeAString(value.componentType) + "[]"
+            } else {
+                value.typeAsString
+            }
+            type.append(typeAsString)
+            if (i < itemTypes.size - 1) {
+                type.append(",")
+            }
+        }
+        type.append(")")
+        return type.toString()
+    }
+}
+
 CustomDynamicStruct(
     DynamicArray(Address::class.java, appraisal.appraisalTokens.map { Address(it) }),
     DynamicArray(
