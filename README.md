@@ -29,11 +29,7 @@ const axiosApi = axios.create({
 const setupAxios = () => {
   axiosApi.interceptors.request.use(function (request) {
     const token = "<YOUR_JWT_KEY_STRING>";
-    if (token) {
-      request.headers["Authorization"] = token;
-    } else {
-      throw "No API key";
-    }
+    request.headers["Authorization"] = token;
     return request;
   });
 
