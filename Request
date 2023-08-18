@@ -3,7 +3,7 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 
 const axiosApi = axios.create({
-  baseURL: "https://api.metalend.tech/liquidation",
+  baseURL: "https://api.metalend.tech/liquidation/v2/get-borrowers",
   timeout: 15000,
   headers: {
     "Content-type": "application/json",
