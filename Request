@@ -1,0 +1,48 @@
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
+
+const axiosApi = axios.create({
+  baseURL: "https://api.metalend.tech/liquidation",
+  timeout: 15000,
+  headers: {
+    "Content-type": "application/json",
+  },
+});
+
+const setupAxios = () => {
+  axiosApi.interceptors.request.use(function (request) {
+    const token = "<YOUR_JWT_KEY_STRING>";
+    request.headers["eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJ1c2VyIl0sInVzZXJfaWQiOiJiNWQxZTk4Zi0zMmNmLTQ4ZTctOTE2Yi1mMjQwZjQyZGVlYTEiLCJzdWIiOiJiNWQxZTk4Zi0zMmNmLTQ4ZTctOTE2Yi1mMjQwZjQyZGVlYTEiLCJleHAiOjE3MDIzODU4MDF9.bGfnzRe1uX9id02ALeB19jmcb4afZ3XLIQl6qoy_VQ8"] = token;
+    return request;
+  });
+
+  axiosApi.interceptors.response.use(
+    function (response) {
+      return response;
+    },
+    function (error) {
+      if (error.response) {
+        throw error.response.data.message;
+      } else if (error.request) {
+        // The request was made but no response was received
+        throw error.request;
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        throw error.message;
+      }
+    }
+  );
+};
+
+class Api {
+  constructor() {
+    setupAxios();
+  }
+
+  async getBorrowers() {
+    return await axiosApi.get(`/v2/get-borrowers`);
+  }
+}
+
+export const api = new Api();
