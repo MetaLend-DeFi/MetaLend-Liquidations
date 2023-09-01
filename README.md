@@ -74,7 +74,7 @@ export const api = new Api();
         * WETH: `0x446450d57b4F26691b6cfac92BAdBA5C8D875a4E` https://app.roninchain.com/address/0x446450d57b4f26691b6cfac92badba5c8d875a4e
         * USDC: `0x3eBC36b9545B4b858b1f233d8F2D933C0858F5f4` https://app.roninchain.com/address/0x3ebc36b9545b4b858b1f233d8f2d933c0858f5f4
         * RON: `0x1Bf2b273745DF6a38E5e5f907DcD4d204A4bfE30` https://app.roninchain.com/address/0x1bf2b273745df6a38e5e5f907dcd4d204a4bfe30
-        * this returns the borrows of an acount denominated in the market currency, wei 18 decimals representation for WETH/RON markets, 6 decimals representation for USDC market
+        * this returns the borrows of an account denominated in the market currency, wei 18 decimals representation for WETH/RON markets, 6 decimals representation for USDC market
         * each borrower can have borrow active only in 1 market kind at a time
         * the borrower must be liquidated in their currently active market
     * `function getAccountTokens(address account) external view returns (uint);`
